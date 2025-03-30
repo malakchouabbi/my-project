@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\TravailProjet;
+
+
+
 class Projet extends Model
 {
     use HasFactory;
@@ -26,5 +30,15 @@ class Projet extends Model
     public function entreprise()
     {
         return $this->belongsTo(Entreprise::class, 'id_entreprise');
+    }
+
+    public function TravailProjet()
+{
+    return $this->hasMany(TravailProjet::class, 'id_projet', 'id_projet');
+}
+
+public function travaux()
+    {
+        return $this->hasMany(TravailProjet::class, 'id_projet', 'id_projet');
     }
 }

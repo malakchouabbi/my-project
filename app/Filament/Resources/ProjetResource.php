@@ -6,19 +6,22 @@ use App\Filament\Resources\ProjetResource\Pages;
 use App\Models\Projet;
 use App\Models\CMP;
 use App\Models\Entreprise;
+use App\Models\TravailProjet;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-
-use Filament\Forms\FormsComponent;
+use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Columns\TextColumn;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use League\Csv\Reader;
 
 class ProjetResource extends Resource
 {
@@ -79,7 +82,7 @@ class ProjetResource extends Resource
     {
         return $table
             ->columns([
-                
+                Tables\Columns\TextColumn::make('id_projet')->label('ID Projet')->sortable(),
                 Tables\Columns\TextColumn::make('titre_projet')->label('Titre Projet')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('cmp.nom_cmp')->label('CMP')->sortable(),
                 Tables\Columns\TextColumn::make('entreprise.nom_entreprise')->label('Entreprise')->sortable(),
@@ -92,22 +95,66 @@ class ProjetResource extends Resource
                    'suspendu' => 'danger',
                    'finalisé' => 'success',
                       })
-    ->sortable(),
+                      ->sortable(),
 
             ])
             ->filters([])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+                ActionGroup::make([
+                    EditAction::make(), // زر التعديل
+                    DeleteAction::make()->requiresConfirmation(), // زر الحذف مع تأكيد
+                    Action::make('importCsv')
+                    ->label('Importer CSV')
+                ->icon('heroicon-o-cloud-arrow-up')
+                ->modalHeading('Importer un fichier CSV')
+                ->modalButton('Importer')
+                ->form([
+                    FileUpload::make('csv_file')
+                        ->label('Fichier CSV')
+                        ->required()
+                        ->acceptedFileTypes(['text/csv'])
+                        ->directory('uploads/csv')
+                ])
+                ->action(fn (array $data, Projet $record) => static::importCsv($data['csv_file'], $record->id_projet)), // تمرير id_projet هنا
+               
+                
+                
+                ])
+    
 
+        ]);
+           
+    }
+    
+   public static function importCsv($filePath, $id_projet)
+
+    {
+        $filePath = Storage::disk('public')->path('uploads/csv/' . basename($filePath));
+       
+    
+
+        $csv = Reader::createFromPath($filePath, 'r');
+        $csv->setHeaderOffset(0);
+
+        DB::transaction(function () use ($csv, $id_projet) {
+            foreach ($csv as $row) {
+                
+                TravailProjet::create([
+                    'id_projet' => $id_projet,
+
+                    'folder_name' => $row['Folder name'] ?? null,
+                    'latitude' => $row['Latitude'] ?? null,
+                    'longitude' => $row['Longitude'] ?? null,
+                    'title' => $row['Title'] ?? null,
+                    'description' => $row['Description'] ?? null,
+                    'color' => $row['Color'] ?? null,
+                    'status' => 'En Cours',
+                ]);
+            }
+        });
+    }
+    
+    
     public static function getRelations(): array
     {
         return [
@@ -116,7 +163,7 @@ class ProjetResource extends Resource
     }
     public static function getPanel(): ?string
     {
-        return 'dashboard'; // ✅ تأكد أن panel هو dashboard
+        return 'dashboard'; 
     }
     
     public static function getPages(): array
