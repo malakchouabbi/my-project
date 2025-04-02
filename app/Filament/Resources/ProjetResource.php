@@ -19,9 +19,12 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use League\Csv\Reader;
+use Filament\Tables\Actions\ModalAction;
+use Filament\Tables\Actions\ViewAction;
 
 class ProjetResource extends Resource
 {
@@ -118,11 +121,12 @@ class ProjetResource extends Resource
                 ->action(fn (array $data, Projet $record) => static::importCsv($data['csv_file'], $record->id_projet)), // تمرير id_projet هنا
                
                 
-                
-                ])
-    
-
-        ]);
+                Action::make('viewTravaux')
+                ->label('Afficher Travaux')
+                ->icon('heroicon-o-eye')
+                ->url(fn (Projet $record) => route('filament.dashboard.resources.projets.view', ['record' => $record->id_projet])),
+                ]),
+             ]);
            
     }
     
@@ -152,7 +156,12 @@ class ProjetResource extends Resource
                 ]);
             }
         });
-    }
+        Notification::make()
+        ->title('importation réussie')
+        ->body('Le fichier CSV a été importé avec succés')
+        ->success()
+        ->send();
+        }
     
     
     public static function getRelations(): array
@@ -172,6 +181,7 @@ class ProjetResource extends Resource
             'index' => Pages\ListProjets::route('/'),
             'create' => Pages\CreateProjet::route('/create'),
             'edit' => Pages\EditProjet::route('/{record}/edit'),
+            'view' => Pages\ViewProjet::route('/{record}/view'),
         ];
     }
 }
