@@ -1,0 +1,4 @@
+.text-primary-600 {
+    --tw-text-opacity: 1;
+    color: blue, var(--tw-text-opacity, 1);
+}

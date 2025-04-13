@@ -1,38 +1,52 @@
+
 <x-filament::page>
-    <h1 class="text-2xl font-bold">Détails du Projet</h1>
-    <p>Titre du Projet: {{ $record->titre_projet }}</p>
-    <p>État: {{ $record->etat_projet }}</p>
+    <style>
+        .px-6{
+            padding-right: 2rem;
+        }
+        .overflow-x-auto.rounded-lg.shadow-sm.border.border-gray-100.bg-white {
+    width: fit-content;
+} 
+    </style>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Détails du Projet</h1>
+    <p class="text-gray-600">Titre du Projet: <span class="font-semibold">{{ $record->titre_projet }}</span></p>
+    <p class="text-gray-600 mb-6">État: <span class="font-semibold">{{ $record->etat_projet }}</span></p>
 
-    <h2 class="text-xl font-bold mt-6 mb-4">Travaux du Projet</h2>
+    <h2 class="text-xl font-bold text-gray-800 mt-6 mb-4">Travaux du Projet</h2>
 
-    <table class="table-auto w-full border-collapse border border-gray-300">
-        <thead>
-            <tr class="bg-gray-200">
-                <th class="border border-gray-300 px-4 py-2">Title</th>
-                <th class="border border-gray-300 px-4 py-2">Description</th>
-                <th class="border border-gray-300 px-4 py-2">Latitude</th>
-                <th class="border border-gray-300 px-4 py-2">Longitude</th>
-                <th class="border border-gray-300 px-4 py-2">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($travaux as $travail)
+    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-100 bg-white">
+        <table class="min-w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                 <tr>
-                    <td class="border border-gray-300 px-4 py-2">{{ $travail->title }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ $travail->description }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ $travail->latitude }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ $travail->longitude }}</td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <span class="px-2 py-1 rounded text-white {{ $travail->status == 'En Cours' ? 'bg-blue-500' : ($travail->status == 'Terminé' ? 'bg-green-500' : 'bg-red-500') }}">
-                            {{ $travail->status }}
-                        </span>
-                    </td>
+                    <th class="px-6 py-3">Titre</th>
+                    <th class="px-6 py-3">Description</th>
+                    <th class="px-6  py-3">Latitude</th>
+                    <th class="px-6 py-3">Longitude</th>
+                    <th class="px-6 py-3">Statut</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="border border-gray-300 px-4 py-2 text-center">Aucun travail trouvé</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="text-gray-700 divide-y divide-gray-100">
+                @forelse ($travaux as $travail)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-medium">{{ $travail->title }}</td>
+                        <td class="px-6 py-4">{{ $travail->description }}</td>
+                        <td class="px-6 py-4">{{ $travail->latitude }}</td>
+                        <td class="px-6 py-4">{{ $travail->longitude }}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold 
+                                {{ $travail->status == 'En Cours' ? 'bg-blue-100 text-blue-700' : ($travail->status == 'Terminé' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') }}">
+                                {{ $travail->status }}
+                            </span>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-400">Aucun travail trouvé</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </x-filament::page>
+
+

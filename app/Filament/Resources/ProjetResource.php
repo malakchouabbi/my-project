@@ -30,7 +30,7 @@ class ProjetResource extends Resource
 {
     protected static ?string $model = Projet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
     public static function form(Form $form): Form
     {
@@ -85,7 +85,6 @@ class ProjetResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id_projet')->label('ID Projet')->sortable(),
                 Tables\Columns\TextColumn::make('titre_projet')->label('Titre Projet')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('cmp.nom_cmp')->label('CMP')->sortable(),
                 Tables\Columns\TextColumn::make('entreprise.nom_entreprise')->label('Entreprise')->sortable(),
@@ -104,8 +103,7 @@ class ProjetResource extends Resource
             ->filters([])
             ->actions([
                 ActionGroup::make([
-                    EditAction::make(), // زر التعديل
-                    DeleteAction::make()->requiresConfirmation(), // زر الحذف مع تأكيد
+                    EditAction::make(),                   
                     Action::make('importCsv')
                     ->label('Importer CSV')
                 ->icon('heroicon-o-cloud-arrow-up')
@@ -125,7 +123,9 @@ class ProjetResource extends Resource
                 ->label('Afficher Travaux')
                 ->icon('heroicon-o-eye')
                 ->url(fn (Projet $record) => route('filament.dashboard.resources.projets.view', ['record' => $record->id_projet])),
+                DeleteAction::make()->requiresConfirmation(),
                 ]),
+                 
              ]);
            
     }
@@ -182,6 +182,7 @@ class ProjetResource extends Resource
             'create' => Pages\CreateProjet::route('/create'),
             'edit' => Pages\EditProjet::route('/{record}/edit'),
             'view' => Pages\ViewProjet::route('/{record}/view'),
+            'details' => Pages\ViewDetails::route('/{record}/details'),
         ];
     }
 }

@@ -37,8 +37,8 @@ class Projet extends Model
     return $this->hasMany(TravailProjet::class, 'id_projet', 'id_projet');
 }
 
-public function travaux()
-    {
-        return $this->hasMany(TravailProjet::class, 'id_projet', 'id_projet');
-    }
+public function ods()
+{
+    return $this->hasMany(Ods::class);
+}
 }

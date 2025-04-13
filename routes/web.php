@@ -15,3 +15,6 @@ Route::get('/test-storage', function () {
     return response()->json($files);
 });
  
+use App\Http\Controllers\OdsPrintController;
+
+Route::get('/ods/{ods}/imprimer', [OdsPrintController::class, 'imprimer'])->name('ods.imprimer');
